@@ -30,7 +30,7 @@ export class FavoriteService{
         return favorited.raw?.shift()
     }
 
-    async unfavorite(args:any){        
+    async unfavorite(args:{email:string,product:string}){        
        const userExists = await this.userService.findToValidate({email:args.email})
         
         if(!userExists) return {message:`Unable to find user`}
