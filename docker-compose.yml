@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: db
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_URL: postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}
+    ports:
+      - 5432:5432
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    networks:
+      - app_network
+  
+  api:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      DB_USER: root
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+      - ./swagger.yml:/app/swagger.yml
+      - ./.env:/app/.env
+    command: ["npm","run","dev"]
+    # command: ["sh","-c","npx ts-node src/database/seeds/user.seed.ts"]
+    networks:
+      - app_network
+
+volumes:
+  db_volume:
+
+networks:
+  app_network:
+    driver: bridge

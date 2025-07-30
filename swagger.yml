@@ -1,0 +1,518 @@
+openapi: 3.0.4
+info:
+  title: Products favorite API
+  description: An API to list and favorite products
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+tags:
+  - name: Auth
+    description: Authentication features
+  - name: Clients
+    description: Authenticated resources to manage clients (by admin)
+  - name: Favorite Products
+    description: Public features to registered clients
+paths:
+  /auth/login:
+    post:
+      summary: Make an authentication request by a provided user/ password (that is eligible)
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/auth'
+      responses:
+        '200': 
+          description: Authentication successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auth_response'
+        '401':
+          description: Unauthorized
+  /auth/refresh-token:
+    post:
+      summary: Generate a new refresh token
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/refreshToken'
+      responses:
+        '200': 
+          description: Authentication successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/auth_response'
+        '401':
+          description: Unauthorized
+  /admin/client/list:
+    get:
+      summary: Get a list of registered clients
+      tags:
+        - Clients
+      requestBody:
+        required: false
+        content:
+          application/json:
+      responses:
+        '200': 
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/client_list_response'
+        '401':
+          description: Unauthorized
+  /admin/client/add:
+    post:
+      summary: Create a new client record
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_client'
+      responses:
+        '200': 
+          description: Client metadata 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/client_list_response'
+        '401':
+          description: Unauthorized
+  /admin/client/:id/edit:
+    put:
+      summary: Edit a client record
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update_client'
+      responses:
+        '200': 
+          description: Client metadata 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update_list_response'
+        '401':
+          description: Unauthorized
+  /admin/client/:id/remove:
+    delete:
+      summary: Remove a client record
+      tags:
+        - Clients
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/remove_client'
+      responses:
+        '200': 
+          description: Client metadata 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/remove_client_response'
+        '401':
+          description: Unauthorized
+  /products/list:
+    get:
+      summary: List Products
+      tags:
+        - Favorite Products
+      requestBody:
+        required: false
+        content:
+          application/json:
+      responses:
+        '200': 
+          description: List of products 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/list_products_response'
+  /products/favorite:
+    post:
+      summary: Favorite a Product
+      tags:
+        - Favorite Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/favorite_product'
+      responses:
+        '200': 
+          description: List of products 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/favorite_product_response'
+  /products/unfavorite:
+    post:
+      summary: Unfavorite a Product
+      tags:
+        - Favorite Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/unfavorite_product'
+      responses:
+        '200': 
+          description: List of products 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unfavorite_product_response'
+  /products/my-favorite:
+    post:
+      summary: List of favorite products by client
+      tags:
+        - Favorite Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/favorited_product'
+      responses:
+        '200': 
+          description: List of products 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/favorited_product_response'
+components:
+  schemas:
+    auth:
+      type: object
+      properties:
+        user:
+          type: string
+          description: The user email registered
+          example: my.email@email.com
+        password:
+          type: string
+          description: The user password registered
+          example: MyP@55W0rd
+      required:
+        - user
+        - password
+    refreshToken:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          description: Expired token
+          example: Token
+      required:
+        - refresh_token
+    auth_response:
+      type: object
+      properties:
+        auth_token:
+          type: string
+          description: The JWT token
+          example: token
+        refresh_token:
+          type: string
+          description: The session refresh token 
+          example: token
+      required:
+        - auth_token
+        - refresh_token
+    client_list_response:
+      type: array
+      properties:
+        id:
+          type: string
+          description: Client ID
+          example: uuid
+        name:
+          type: string
+          description: Client Name 
+          example: João Silva
+        email:
+          type: string
+          description: Client email
+          example: client@email.com
+        created_at:
+          type: timestamp
+          description: When record was created 
+          example: timestamp
+        updated_at:
+          type: timestamp
+          description: When record was updated 
+          example: timestamp
+      required:
+        - auth_token
+    create_client:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Client name
+          example: João Silva
+        email:
+          type: string
+          description: Client email
+          example: client@email.com
+      required:
+        - auth_token
+    create_client_response:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Client ID
+          example: uuid
+        admin:
+          type: boolean
+          description: User role
+          example: false
+        created_at:
+          type: timestamp
+          description: When record was created 
+          example: timestamp
+        updated_at:
+          type: timestamp
+          description: When record was updated 
+          example: timestamp
+        deleted_at:
+          type: timestamp
+          description: When record was soft deleted 
+          example: timestamp
+      required:
+        - auth_token
+    update_client:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Client name
+          example: João Silva
+        email:
+          type: string
+          description: Client email
+          example: client@email.com
+      required:
+        - auth_token
+        - id
+    update_client_response:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Client ID
+          example: uuid
+        admin:
+          type: boolean
+          description: User role
+          example: false
+        created_at:
+          type: timestamp
+          description: When record was created 
+          example: timestamp
+        updated_at:
+          type: timestamp
+          description: When record was updated 
+          example: timestamp
+        deleted_at:
+          type: timestamp
+          description: When record was soft deleted 
+          example: timestamp
+      required:
+        - auth_token
+        - id
+    remove_client:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Client ID
+          example: uuid
+      required:
+        - auth_token
+        - id
+    remove_client_response:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Client ID
+          example: uuid
+      required:
+        - auth_token
+        - id
+    list_products_response:
+      type: array
+      properties:
+        id:
+          type: string
+          description: Internal product ID
+          example: uuid
+        product_id:
+          type: number
+          description: Product ID
+          example: 1
+        product_title:
+          type: string
+          description: Product description
+          example: description
+        product_price:
+          type: number
+          description: Product price
+          example: 00.01
+        product_image_ref:
+          type: string
+          description: Product image
+          example: link
+        product_rating:
+          type: number
+          description: Product rating
+          example: 5.00
+        product_rating_count:
+          type: number
+          description: Product rating count
+          example: 100
+        created_at:
+          type: timestamp
+          description: When record was created 
+          example: timestamp
+        updated_at:
+          type: timestamp
+          description: When record was updated 
+          example: timestamp
+        deleted_at:
+          type: timestamp
+          description: When record was soft deleted 
+          example: timestamp
+      required:
+        - id
+    favorite_product:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Client email
+          example: client@email.com
+        product:
+          type: string
+          description: Produc ID
+          example: uuid        
+      required:
+        - email
+        - product
+    favorite_product_response:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal product ID
+          example: uuid
+        created_at:
+          type: timestamp
+          description: When record was created 
+          example: timestamp
+        updated_at:
+          type: timestamp
+          description: When record was updated 
+          example: timestamp
+        deleted_at:
+          type: timestamp
+          description: When record was soft deleted 
+          example: timestamp        
+      required:
+        - email
+        - product
+    unfavorite_product:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Client email
+          example: client@email.com
+        product:
+          type: string
+          description: Produc ID
+          example: uuid        
+      required:
+        - email
+        - product
+    unfavorite_product_response:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Message
+          example: success message      
+      required:
+        - email
+        - product
+    favorited_product:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Client email
+          example: client@email.com      
+      required:
+        - email
+    favorited_product_response:
+      type: array
+      properties:
+        id:
+          type: string
+          description: Internal product ID
+          example: uuid
+        favorited_at:
+          type: timestamp
+          description: When record was created 
+          example: timestamp
+        product_id:
+          type: number
+          description: Product ID
+          example: 1
+        product_title:
+          type: string
+          description: Product description
+          example: description
+        product_price:
+          type: number
+          description: Product price
+          example: 00.01
+        product_image_ref:
+          type: string
+          description: Product image
+          example: link
+        product_rating:
+          type: number
+          description: Product rating
+          example: 5.00
+        product_rating_count:
+          type: number
+          description: Product rating count
+          example: 100
+      required:
+        - email
+    

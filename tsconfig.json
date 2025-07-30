@@ -1,0 +1,22 @@
+{
+    "compilerOptions":{
+        "target":"es2024",
+        "module": "commonjs",
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop":true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames":true,
+        "resolveJsonModule": true,
+        "experimentalDecorators":true,
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "typeRoots": [
+            "src/types"
+        ]
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules","dist"],
+    "files":["src/types/auth.d.ts"]
+}
