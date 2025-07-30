@@ -31,9 +31,10 @@ export class FavoriteService{
     }
 
     async unfavorite(args:{email:string,product:string}){        
-       const userExists = await this.userService.findToValidate({email:args.email})
+        const userExists = await this.userService.findToValidate({email:args.email})
+        const productExists = await this.productRepository.findBy({id: args.product})
         
-        if(!userExists) return {message:`Unable to find user`}
+        if(!userExists || (!productExists || productExists.length < 1)) return {message:`Unable to find user or product`}
 
         const isFavorited = await this.repository.findBy({user_id:userExists.id,product_ref_id:args.product})
 
