@@ -1,5 +1,12 @@
 # favorite-products-api
 
+Uma API para gerenciar clientes e favoritar produtos!
+
+### Stack 
+
+NodeJs + ExpressJs {Joi, TypeORM, Swagger} + PostgreSQL
+Docker & Docker compose
+
 ## Steps para execução da API
 
 ### 1. Subindo o container da aplicação
